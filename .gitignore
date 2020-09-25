@@ -1,5 +1,5 @@
 .vs/
-Sudoku/bin
-Sudoku/obj
-Sudoku/Properties
+Sudoku/bin/
+Sudoku/obj/
+Sudoku/Properties/
 Sudoku/App.config

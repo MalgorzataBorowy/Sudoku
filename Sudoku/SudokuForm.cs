@@ -63,7 +63,7 @@ namespace Sudoku
             int value;
 
             // Add the pressed key value in the cell only if it is a number
-            if (int.TryParse(e.KeyChar.ToString(), out value) && value<=9 && value>0)
+            if (int.TryParse(e.KeyChar.ToString(), out value))
             {
                 // Clear the cell value if pressed key is zero
                 if (value == 0)

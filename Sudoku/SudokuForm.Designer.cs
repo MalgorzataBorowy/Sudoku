@@ -29,6 +29,7 @@
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(SudokuForm));
             this.panel1 = new System.Windows.Forms.Panel();
             this.btn_Check = new System.Windows.Forms.Button();
             this.btn_Solve = new System.Windows.Forms.Button();
@@ -122,8 +123,9 @@
             this.Controls.Add(this.btn_Solve);
             this.Controls.Add(this.btn_Check);
             this.Controls.Add(this.panel1);
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "SudokuForm";
-            this.Text = "Form1";
+            this.Text = "Sudoku";
             this.ResumeLayout(false);
             this.PerformLayout();
 
