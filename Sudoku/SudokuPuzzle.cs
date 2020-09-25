@@ -17,24 +17,18 @@ namespace Sudoku
 
         public void generateGame(int blanks)
         {
-            //this.generateSudoku();
-            this.generateDiagonalPuzzle();
+            //this.generateSudoku();    // Slow algorithm
 
+            this.generateDiagonalPuzzle();  // Generate the diagonal squares
 
-            /*matrix = new int[,] {{ 6, 3, 8, 2, 1, 9, 7, 5, 4}, { 9, 7, 5, 6, 3, 4, 2, 8, 1},{ 1, 2, 4, 8, 5, 7, 9, 3, 6},{ 3, 5, 1, 7, 4, 6, 8, 9, 2},
-{ 4, 6, 9, 5, 8, 2, 3, 1, 7},
-{ 2, 8, 7, 1, 9, 3, 6, 4, 5},
-{ 8, 1, 6, 3, 7, 5, 4, 2, 9},
-{ 5, 4, 2, 9, 6, 8, 1, 7, 3},
-{ 7, 9, 3, 4, 2, 1, 5, 6, 8} };*/
-            for (int i = 0; i < size; i++)
+            for (int i = 0; i < size; i++)  // Fill sudokupuzzle with SudokuFields
             {
                 for (int j = 0; j < size; j++)
                 {
-                    sudokuPuzzle[i, j] = new SudokuField(matrix[i, j], false);
+                    sudokuPuzzle[i, j] = new SudokuField(matrix[i, j], true);
                 }
             }
-            solvePuzzle();
+            solvePuzzle();  // Solve basing on the diagonal sudoku
 
             while (blanks > 0)
             {
@@ -43,7 +37,7 @@ namespace Sudoku
                 if (sudokuPuzzle[i, j].Value != 0)
                 {
                     sudokuPuzzle[i, j].Value = 0;
-                    sudokuPuzzle[i, j].Status = true;
+                    sudokuPuzzle[i, j].IsLocked = false;
                     blanks--;
                 }
             }
@@ -52,7 +46,7 @@ namespace Sudoku
 
         public void makeGuess(int x, int y, int value)
         {
-            if (sudokuPuzzle[x, y].Status)
+            if (!sudokuPuzzle[x, y].IsLocked)
                 sudokuPuzzle[x, y].Value = value;
         }
 

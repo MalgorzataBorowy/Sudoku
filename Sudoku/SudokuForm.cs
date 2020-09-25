@@ -21,7 +21,7 @@ namespace Sudoku
             startNewGame();
         }
 
-        SudokuCell[,] cells = new SudokuCell[9, 9];
+        private SudokuCell[,] cells = new SudokuCell[9, 9];
         private SudokuPuzzle puzzle;
         private Stopwatch stopwatch = new Stopwatch();
 
@@ -35,11 +35,12 @@ namespace Sudoku
                     cells[i, j] = new SudokuCell();
                     cells[i, j].Font = new Font(SystemFonts.DefaultFont.FontFamily, 20);
                     cells[i, j].Size = new Size(40, 40);
-                    cells[i, j].ForeColor = Color.Black;
                     cells[i, j].Location = new Point(i * 40, j * 40);
-                    cells[i, j].BackColor = ((i / 3) + (j / 3)) % 2 == 0 ? SystemColors.Control : Color.LightGray;
+                    cells[i, j].BackColor = ((i / 3) + (j / 3)) % 2 == 0 ? SystemColors.Control : Color.LightSeaGreen;
+                    cells[i, j].ForeColor = ((i / 3) + (j / 3)) % 2 == 0 ? Color.Black : Color.White;
                     cells[i, j].FlatStyle = FlatStyle.Flat;
-                    cells[i, j].FlatAppearance.BorderColor = Color.Black;
+                    cells[i, j].FlatAppearance.BorderColor = Color.Teal;
+                    cells[i, j].FlatAppearance.BorderSize = 1;
                     cells[i, j].X = i;
                     cells[i, j].Y = j;
 
@@ -77,9 +78,9 @@ namespace Sudoku
             }
         }
 
-        private void startNewGame()
+        private void startNewGame() // Creates new game and starts the stopwatch
         {
-            // Clear the values in each cells
+            // Clear the value in every cell
             foreach (var cell in cells)
             {
                 cell.Value = 0;
@@ -88,15 +89,15 @@ namespace Sudoku
 
             // Generate new game
             puzzle = new SudokuPuzzle();
-            puzzle.generateGame(36);
+            puzzle.generateGame(36);    //generate game with 36 blanks
 
-            for(int i=0; i<9; i++)
+            for(int i=0; i<9; i++)  // Set interface
             {
                 for(int j=0; j<9; j++)
                 {
                     cells[i, j].Value = puzzle.sudokuPuzzle[i, j].Value;
                     cells[i, j].IsLocked = true;
-                    cells[i, j].ForeColor = Color.Black;
+                    cells[i, j].ForeColor = ((i / 3) + (j / 3)) % 2 == 0 ? Color.Black : Color.White;
                     cells[i, j].Text = cells[i, j].Value.ToString();
                     if (cells[i, j].Value == 0)
                     {
@@ -107,10 +108,31 @@ namespace Sudoku
             }
             stopwatch.Restart();
         }
-        private void btnCheck_Click(object sender, EventArgs e)
+
+        private void clearPuzzle()  // Clears the user's solution
+        {
+            for (int i = 0; i < 9; i++)
+            {
+                for (int j = 0; j < 9; j++)
+                {
+                    if (!cells[i, j].IsLocked)
+                    {
+                        puzzle.makeGuess(i, j, 0);
+                        cells[i, j].Value = 0;
+                        cells[i, j].Clear();
+                    }
+                }
+            }
+        }
+
+
+        // Button events        
+        
+        private void btnCheck_Click(object sender, EventArgs e) // Checks the user's solution
         {
             stopwatch.Stop();
-            for(int i=0;i<9;i++)
+
+            for(int i=0;i<9;i++)    // Send user solution 
             {
                 for(int j=0; j<9; j++)
                 {
@@ -123,7 +145,7 @@ namespace Sudoku
 
             bool solved = puzzle.checkPuzzle();
 
-            if (solved)
+            if (solved)  // Show message with result
             {
                 TimeSpan ts = stopwatch.Elapsed;
                 string elapsedTime = String.Format("{0:00}:{1:00}:{2:00}",ts.Hours, ts.Minutes, ts.Seconds);
@@ -139,25 +161,23 @@ namespace Sudoku
 
         }
 
-        private void btnSolve_Click(object sender, EventArgs e)
+        private void btnSolve_Click(object sender, EventArgs e) //Solves the puzzle and resets the stopwatch to 0
         {
+            clearPuzzle();  // Clear puzzle from user modifications
             puzzle.solvePuzzle();
-            for (int i = 0; i < 9; i++)
+            for (int i = 0; i < 9; i++) // Update the user interface
             {
                 for (int j = 0; j < 9; j++)
                 {
                     cells[i, j].Value = puzzle.sudokuPuzzle[i, j].Value;
-                    cells[i, j].IsLocked = !puzzle.sudokuPuzzle[i,j].Status;
                     if (!cells[i,j].IsLocked)
-                        cells[i, j].ForeColor = SystemColors.ControlDarkDark;
+                        cells[i, j].ForeColor = SystemColors.ControlDarkDark;   //Change the color in unlocked fields
                     cells[i, j].Text = cells[i, j].Value.ToString();
                     if (cells[i, j].Value == 0)
-                    {
                         cells[i, j].Clear();
-                        cells[i, j].IsLocked = false;
-                    }
                 }
             }
+            stopwatch.Reset();
         }
 
         private void btnNewGame_Click(object sender, EventArgs e)
@@ -165,17 +185,14 @@ namespace Sudoku
             startNewGame();
         }
 
-        private void btnClear_Click(object sender, EventArgs e)
+        private void btnClear_Click(object sender, EventArgs e) // Clears the puzzle and restarts the stopwatch
         {
-            foreach (var cell in cells)
-            {
-                // Clear the cell only if it is not locked
-                if (cell.IsLocked == false)
-                    cell.Clear();
-            }
+            clearPuzzle();
+            stopwatch.Restart();
+
         }
 
-        private void timer1_Tick(object sender, EventArgs e)
+        private void timer1_Tick(object sender, EventArgs e)    // Updates the label with elapsed time displayed every 1 sec
         {
             TimeSpan ts = stopwatch.Elapsed;
             string elapsedTime = String.Format("{0:00}:{1:00}:{2:00}",ts.Hours, ts.Minutes, ts.Seconds);

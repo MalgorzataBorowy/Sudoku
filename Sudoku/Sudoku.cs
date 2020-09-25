@@ -6,6 +6,13 @@ using System.Threading.Tasks;
 
 namespace Sudoku
 {
+    /// <summary>
+    ///  Class for generating 
+    ///  - fully filled sudoku (random numbers), 
+    ///  - sudoku with diagonal squares filled (random),
+    ///  - sudoku with custom solution.
+    /// </summary>
+    
     class Sudoku
     {
         protected const int size = 9;

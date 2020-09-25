@@ -6,14 +6,14 @@ using System.Threading.Tasks;
 
 namespace Sudoku
 {
-    struct SudokuField
+    struct SudokuField  //single field of sudoku puzzle
     {
         public int Value { get; set; }
-        public bool Status { get; set; } //if the value can be changed
+        public bool IsLocked { get; set; } //if the value can be changed
 
         public SudokuField(int value, bool status)
         {
-            Status = status;
+            IsLocked = status;
             Value = value;
         }
     }
