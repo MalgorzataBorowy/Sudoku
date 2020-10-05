@@ -24,13 +24,13 @@ namespace Sudoku
             matrix = new int[size, size];
         }
 
-        protected int generateRandom()  // generates random number from 1 to 9
+        protected int GenerateRandom()  // generates random number from 1 to 9
         {
             Random rnd = new Random();
             return rnd.Next(1, 10);
         }
 
-        private bool checkSquare(int value, int k, int r)   //checks if value is already placed in a given square
+        private bool CheckSquare(int value, int k, int r)   //checks if value is already placed in a given square
         {
             for (int i = k; i < k + 3; i++)
             {
@@ -43,7 +43,7 @@ namespace Sudoku
             return true;
         }
 
-        private bool checkRow(int value, int r)
+        private bool CheckRow(int value, int r)
         {
             for (int i = 0; i < size; i++)
             {
@@ -52,7 +52,7 @@ namespace Sudoku
             }
             return true;
         }
-        private bool checkColumn(int value, int k)
+        private bool CheckColumn(int value, int k)
         {
             for (int i = 0; i < size; i++)
             {
@@ -62,17 +62,17 @@ namespace Sudoku
             return true;
         }
 
-        private bool fillSquare(int k, int r)
+        private bool FillSquare(int k, int r)
         {
             for (int i = k - 1; i < k + 2; i++)
             {
                 for (int j = r - 1; j < r + 2; j++)
                 {
                     List<int> table = new List<int>();
-                    int rnd = generateRandom();
-                    while (!(checkSquare(rnd, k - 1, r - 1) && (checkRow(rnd, i)) && checkColumn(rnd, j)))
+                    int rnd = GenerateRandom();
+                    while (!(CheckSquare(rnd, k - 1, r - 1) && (CheckRow(rnd, i)) && CheckColumn(rnd, j)))
                     {
-                        rnd = generateRandom();
+                        rnd = GenerateRandom();
                         if (!table.Contains(rnd))
                         {
                             table.Add(rnd);
@@ -86,7 +86,7 @@ namespace Sudoku
             return true;
         }
 
-        private void fillWithZeros()
+        private void FillWithZeros()
         {
             for (int i = 0; i < size; i++)
             {
@@ -95,30 +95,30 @@ namespace Sudoku
             }
         }
 
-        private void generateDiagonal()
+        private void GenerateDiagonal()
         {
-            fillSquare(1, 1);
-            fillSquare(4, 4);
-            fillSquare(7, 7);
+            FillSquare(1, 1);
+            FillSquare(4, 4);
+            FillSquare(7, 7);
         }
         
-        protected void generateDiagonalPuzzle()
+        protected void GenerateDiagonalPuzzle()
         {
-            fillWithZeros();
-            generateDiagonal();
+            FillWithZeros();
+            GenerateDiagonal();
         }
 
-        private bool generateNonDiagonal()
+        private bool GenerateNonDiagonal()
         {
             int cos = 0;
-            generateDiagonal();
+            GenerateDiagonal();
             for (int i = 1; i < size; i += 3)
             {
                 for (int j = 1; j < size; j += 3)
                 {
                     if (i != j)
                     {
-                        bool flag = fillSquare(i, j);
+                        bool flag = FillSquare(i, j);
                         if (!flag)
                         {
                             return false;
@@ -132,18 +132,18 @@ namespace Sudoku
             return true;
         }
 
-        public bool generateSudoku()
+        public bool GenerateSudoku()
         {
-            bool flag = generateNonDiagonal();
+            bool flag = GenerateNonDiagonal();
             while (!flag)
             {
-                fillWithZeros();
-                flag = generateNonDiagonal();
+                FillWithZeros();
+                flag = GenerateNonDiagonal();
             }
             return flag;
         }
 
-        public void setMatrix(int[,] matrix)
+        public void SetMatrix(int[,] matrix)
         {
             if (matrix.GetLength(0) == size && matrix.GetLength(1) == size)
                 this.matrix = matrix;

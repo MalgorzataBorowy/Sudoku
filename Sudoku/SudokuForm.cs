@@ -17,15 +17,15 @@ namespace Sudoku
         public SudokuForm()
         {
             InitializeComponent();
-            createCells();
-            startNewGame();
+            CreateCells();
+            StartNewGame();
         }
 
         private SudokuCell[,] cells = new SudokuCell[9, 9];
         private SudokuPuzzle puzzle;
         private Stopwatch stopwatch = new Stopwatch();
 
-        private void createCells()
+        private void CreateCells()
         {
             for (int i = 0; i < 9; i++)
             {
@@ -78,7 +78,7 @@ namespace Sudoku
             }
         }
 
-        private void startNewGame() // Creates new game and starts the stopwatch
+        private void StartNewGame() // Creates new game and starts the stopwatch
         {
             // Clear the value in every cell
             foreach (var cell in cells)
@@ -89,7 +89,7 @@ namespace Sudoku
 
             // Generate new game
             puzzle = new SudokuPuzzle();
-            puzzle.generateGame(36);    //generate game with 36 blanks
+            puzzle.GenerateGame(36);    //generate game with 36 blanks
 
             for(int i=0; i<9; i++)  // Set interface
             {
@@ -109,7 +109,7 @@ namespace Sudoku
             stopwatch.Restart();
         }
 
-        private void clearPuzzle()  // Clears the user's solution
+        private void ClearPuzzle()  // Clears the user's solution
         {
             for (int i = 0; i < 9; i++)
             {
@@ -117,7 +117,7 @@ namespace Sudoku
                 {
                     if (!cells[i, j].IsLocked)
                     {
-                        puzzle.makeGuess(i, j, 0);
+                        puzzle.MakeGuess(i, j, 0);
                         cells[i, j].Value = 0;
                         cells[i, j].Clear();
                     }
@@ -138,12 +138,12 @@ namespace Sudoku
                 {
                     if(!cells[i,j].IsLocked)
                     {
-                        puzzle.makeGuess(i, j, cells[i, j].Value);
+                        puzzle.MakeGuess(i, j, cells[i, j].Value);
                     }
                 }
             }
 
-            bool solved = puzzle.checkPuzzle();
+            bool solved = puzzle.CheckPuzzle();
 
             if (solved)  // Show message with result
             {
@@ -163,8 +163,8 @@ namespace Sudoku
 
         private void btnSolve_Click(object sender, EventArgs e) //Solves the puzzle and resets the stopwatch to 0
         {
-            clearPuzzle();  // Clear puzzle from user modifications
-            puzzle.solvePuzzle();
+            ClearPuzzle();  // Clear puzzle from user modifications
+            puzzle.SolvePuzzle();
             for (int i = 0; i < 9; i++) // Update the user interface
             {
                 for (int j = 0; j < 9; j++)
@@ -182,14 +182,60 @@ namespace Sudoku
 
         private void btnNewGame_Click(object sender, EventArgs e)
         {
-            startNewGame();
+            StartNewGame();
         }
 
         private void btnClear_Click(object sender, EventArgs e) // Clears the puzzle and restarts the stopwatch
         {
-            clearPuzzle();
+            ClearPuzzle();
             stopwatch.Restart();
 
+        }
+
+        private void btnBlank_Click(object sender, EventArgs e) 
+        {
+            stopwatch.Reset();
+            puzzle.Reset();
+            for (int i = 0; i < 9; i++)    // Send user solution 
+            {
+                for (int j = 0; j < 9; j++)
+                {
+                    cells[i,j].Value = 0;
+                    cells[i,j].Clear();
+                    cells[i, j].IsLocked = false;
+
+                }
+            }
+        }
+
+        private void btnSolveCustom_Click(object sender, EventArgs e) // Solve user defined puzzle
+        {
+            for (int i = 0; i < 9; i++) // Update puzzle with user values
+            {
+                for (int j = 0; j < 9; j++)
+                {
+                    if(cells[i,j].Value!=0)
+                    {
+                        puzzle.MakeGuess(i, j, cells[i, j].Value);  // Set sudoku puzzle fields
+                        cells[i, j].IsLocked = true;    //Change field status
+                    }
+                }
+            }
+            puzzle.SolvePuzzle();
+            for (int i = 0; i < 9; i++) // Update the user interface
+            {
+                for (int j = 0; j < 9; j++)
+                {
+                    cells[i, j].Value = puzzle.sudokuPuzzle[i, j].Value;
+                    cells[i, j].ForeColor = ((i / 3) + (j / 3)) % 2 == 0 ? Color.Black : Color.White; // Set the color depending of square
+                    if (!cells[i, j].IsLocked)
+                        cells[i, j].ForeColor = SystemColors.ControlDarkDark;   //Change the color in unlocked fields
+                    cells[i, j].Text = cells[i, j].Value.ToString();
+                    if (cells[i, j].Value == 0)
+                        cells[i, j].Clear();
+                }
+            }
+            stopwatch.Reset();
         }
 
         private void timer1_Tick(object sender, EventArgs e)    // Updates the label with elapsed time displayed every 1 sec

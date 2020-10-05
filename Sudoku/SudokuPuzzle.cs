@@ -15,11 +15,11 @@ namespace Sudoku
             sudokuPuzzle = new SudokuField[size, size];
         }
 
-        public void generateGame(int blanks)
+        public void GenerateGame(int blanks)
         {
             //this.generateSudoku();    // Slow algorithm
 
-            this.generateDiagonalPuzzle();  // Generate the diagonal squares
+            this.GenerateDiagonalPuzzle();  // Generate the diagonal squares
 
             for (int i = 0; i < size; i++)  // Fill sudokupuzzle with SudokuFields
             {
@@ -28,12 +28,12 @@ namespace Sudoku
                     sudokuPuzzle[i, j] = new SudokuField(matrix[i, j], true);
                 }
             }
-            solvePuzzle();  // Solve basing on the diagonal sudoku
+            SolvePuzzle();  // Solve basing on the diagonal sudoku
 
             while (blanks > 0)
             {
-                int i = generateRandom() - 1;
-                int j = generateRandom() - 1;
+                int i = GenerateRandom() - 1;
+                int j = GenerateRandom() - 1;
                 if (sudokuPuzzle[i, j].Value != 0)
                 {
                     sudokuPuzzle[i, j].Value = 0;
@@ -44,13 +44,13 @@ namespace Sudoku
 
         }
 
-        public void makeGuess(int x, int y, int value)
+        public void MakeGuess(int x, int y, int value)
         {
             if (!sudokuPuzzle[x, y].IsLocked)
                 sudokuPuzzle[x, y].Value = value;
         }
 
-        private bool checkSquare(int value, int r, int k)
+        private bool CheckSquare(int value, int r, int k)
         {
             // Calculating coordinates of first element of a square
             int a = r / 3;
@@ -74,7 +74,7 @@ namespace Sudoku
             return true;
         }
 
-        private bool checkRow(int value, int r, int k)
+        private bool CheckRow(int value, int r, int k)
         {
             for (int i = 0; i < size; i++)
             {
@@ -83,7 +83,7 @@ namespace Sudoku
             }
             return true;
         }
-        private bool checkColumn(int value, int r, int k)
+        private bool CheckColumn(int value, int r, int k)
         {
             for (int i = 0; i < size; i++)
             {
@@ -93,7 +93,7 @@ namespace Sudoku
             return true;
         }
 
-        public bool checkPuzzle()
+        public bool CheckPuzzle()
         {
             for (int i = 0; i < size; i++)
             {
@@ -101,15 +101,15 @@ namespace Sudoku
                 {
                     if (sudokuPuzzle[i, j].Value == 0)
                         return false;
-                    if (!(checkSquare(sudokuPuzzle[i, j].Value, i, j) && checkRow(sudokuPuzzle[i, j].Value, i, j) &&
-                        checkColumn(sudokuPuzzle[i, j].Value, i, j)))
+                    if (!(CheckSquare(sudokuPuzzle[i, j].Value, i, j) && CheckRow(sudokuPuzzle[i, j].Value, i, j) &&
+                        CheckColumn(sudokuPuzzle[i, j].Value, i, j)))
                         return false;
                 }
             }
             return true;
         }
 
-        public bool solvePuzzle()
+        public bool SolvePuzzle()
         {
             bool emptyField = false;
             int r = 0;
@@ -131,16 +131,28 @@ namespace Sudoku
 
             for (int value = 1; value < 10; value++)
             {
-                if (checkSquare(value, r, k) && checkRow(value, r, k) && checkColumn(value, r, k))
+                if (CheckSquare(value, r, k) && CheckRow(value, r, k) && CheckColumn(value, r, k))
                 {
                     sudokuPuzzle[r, k].Value = value;
-                    if (solvePuzzle())
+                    if (SolvePuzzle())
                         return true;
                     sudokuPuzzle[r, k].Value = 0;
                 }
             }
 
             return false;
+        }
+
+        public void Reset()
+        {
+            for (int i = 0; i < size; i++)  // Set all fields to 0 and false
+            {
+                for (int j = 0; j < size; j++)
+                {
+                    sudokuPuzzle[i, j].IsLocked = false;
+                    sudokuPuzzle[i, j].Value = 0;
+                }
+            }
         }
     }
 }
