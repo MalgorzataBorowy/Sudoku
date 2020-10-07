@@ -19,6 +19,7 @@ namespace Sudoku
             InitializeComponent();
             CreateCells();
             StartNewGame();
+            gbSolver.Visible = false;
         }
 
         private SudokuCell[,] cells = new SudokuCell[9, 9];
@@ -72,8 +73,7 @@ namespace Sudoku
                 {
                     cell.Text = value.ToString();
                     cell.Value = value;
-                }                 
-
+                }
                 cell.ForeColor = SystemColors.ControlDarkDark;
             }
         }
@@ -236,6 +236,22 @@ namespace Sudoku
                 }
             }
             stopwatch.Reset();
+        }
+
+        private void rbModeChanged(object sender, EventArgs e)    // Changes app mode between game and solver
+        {
+            if(rbGame.Checked)
+            {
+                gbGame.Visible = true;
+                gbSolver.Visible = false;
+                StartNewGame();
+            }
+            else if(rbSolver.Checked)
+            {
+                gbGame.Visible = false;
+                gbSolver.Visible = true;
+                btnBlank_Click(sender, e);
+            }
         }
 
         private void timer1_Tick(object sender, EventArgs e)    // Updates the label with elapsed time displayed every 1 sec
