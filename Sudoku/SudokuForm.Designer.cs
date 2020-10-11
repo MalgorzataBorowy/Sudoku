@@ -206,7 +206,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(658, 476);
+            this.ClientSize = new System.Drawing.Size(658, 473);
             this.Controls.Add(this.groupBox3);
             this.Controls.Add(this.gbSolver);
             this.Controls.Add(this.gbGame);

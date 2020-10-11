@@ -78,8 +78,9 @@ namespace Sudoku
             }
         }
 
-        private void StartNewGame() // Creates new game and starts the stopwatch
+        private async Task StartNewGame() // Creates new game and starts the stopwatch
         {
+            stopwatch.Reset();
             // Clear the value in every cell
             foreach (var cell in cells)
             {
@@ -89,7 +90,7 @@ namespace Sudoku
 
             // Generate new game
             puzzle = new SudokuPuzzle();
-            puzzle.GenerateGame(36);    //generate game with 36 blanks
+            await Task.Run(()=>puzzle.GenerateGame(36));    //generate game with 36 blanks
 
             for(int i=0; i<9; i++)  // Set interface
             {
@@ -180,9 +181,9 @@ namespace Sudoku
             stopwatch.Reset();
         }
 
-        private void btnNewGame_Click(object sender, EventArgs e)
+        private async void btnNewGame_Click(object sender, EventArgs e)
         {
-            StartNewGame();
+            await StartNewGame();
         }
 
         private void btnClear_Click(object sender, EventArgs e) // Clears the puzzle and restarts the stopwatch
