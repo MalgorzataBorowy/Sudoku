@@ -6,6 +6,14 @@ using System.Threading.Tasks;
 
 namespace Sudoku
 {
+    /// <summary>
+    /// Class that:
+    /// - stores a sudoku puzzle
+    /// - generates a sudoku game (sudoku with blanks)
+    /// - checks user solution
+    /// - solves a game
+    /// - resets game
+    /// </summary>
     class SudokuPuzzle : Sudoku
     {
         public SudokuField[,] sudokuPuzzle { get;  }
@@ -104,6 +112,22 @@ namespace Sudoku
                     if (!(CheckSquare(sudokuPuzzle[i, j].Value, i, j) && CheckRow(sudokuPuzzle[i, j].Value, i, j) &&
                         CheckColumn(sudokuPuzzle[i, j].Value, i, j)))
                         return false;
+                }
+            }
+            return true;
+        }
+        public bool CheckValidity()
+        {
+            for (int i = 0; i < size; i++)
+            {
+                for (int j = 0; j < size; j++)
+                {
+                    if (sudokuPuzzle[i, j].Value!=0)    // only values of fields different then 0
+                    {
+                        if (!(CheckSquare(sudokuPuzzle[i, j].Value, i, j) && CheckRow(sudokuPuzzle[i, j].Value, i, j) &&
+                            CheckColumn(sudokuPuzzle[i, j].Value, i, j)))
+                            return false;
+                    }                        
                 }
             }
             return true;

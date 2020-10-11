@@ -8,9 +8,9 @@ namespace Sudoku
 {
     /// <summary>
     ///  Class for generating 
-    ///  - fully filled sudoku (random numbers), 
+    ///  - fully filled sudoku (random), 
     ///  - sudoku with diagonal squares filled (random),
-    ///  - sudoku with custom solution.
+    ///  - setting sudoku with custom solution.
     /// </summary>
     
     class Sudoku

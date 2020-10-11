@@ -14,6 +14,9 @@ namespace Sudoku
 {
     public partial class SudokuForm : Form
     {
+        /// <summary>
+        /// UI for SudokuPuzzle using Windows Forms
+        /// </summary>
         public SudokuForm()
         {
             InitializeComponent();
@@ -222,21 +225,35 @@ namespace Sudoku
                     }
                 }
             }
-            puzzle.SolvePuzzle();
-            for (int i = 0; i < 9; i++) // Update the user interface
+            if (puzzle.CheckValidity()) // Check if in any column, row or square there are no duplicate values
             {
-                for (int j = 0; j < 9; j++)
+                puzzle.SolvePuzzle();
+                for (int i = 0; i < 9; i++) // Update the user interface
                 {
-                    cells[i, j].Value = puzzle.sudokuPuzzle[i, j].Value;
-                    cells[i, j].ForeColor = ((i / 3) + (j / 3)) % 2 == 0 ? Color.Black : Color.White; // Set the color depending of square
-                    if (!cells[i, j].IsLocked)
-                        cells[i, j].ForeColor = SystemColors.ControlDarkDark;   //Change the color in unlocked fields
-                    cells[i, j].Text = cells[i, j].Value.ToString();
-                    if (cells[i, j].Value == 0)
-                        cells[i, j].Clear();
+                    for (int j = 0; j < 9; j++)
+                    {
+                        cells[i, j].Value = puzzle.sudokuPuzzle[i, j].Value;
+                        cells[i, j].ForeColor = ((i / 3) + (j / 3)) % 2 == 0 ? Color.Black : Color.White; // Set the color depending of square
+                        if (!cells[i, j].IsLocked)
+                            cells[i, j].ForeColor = SystemColors.ControlDarkDark;   //Change the color in unlocked fields
+                        cells[i, j].Text = cells[i, j].Value.ToString();
+                        if (cells[i, j].Value == 0)
+                            cells[i, j].Clear();
+                    }
                 }
+                stopwatch.Reset();
             }
-            stopwatch.Reset();
+            else
+            {
+                for (int i = 0; i < 9; i++) // Update puzzle with user values
+                {
+                    for (int j = 0; j < 9; j++)
+                    {
+                        cells[i, j].IsLocked = false;    //Change field status to allow further field modification
+                    }
+                }
+                MessageBox.Show("Incorrect input");
+            }
         }
 
         private void rbModeChanged(object sender, EventArgs e)    // Changes app mode between game and solver
