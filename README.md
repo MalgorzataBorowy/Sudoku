@@ -8,8 +8,6 @@ Sudoku is an app with graphic interface for playing and soliving a classic Sudok
 * Checking the user solution
 * Stopwatch
 * Solving the puzzle
-
-To add:
 * Abbility for user to add a puzzle and then solve it using the built in sudoku solving algorithm.
 
 ## Technologies
