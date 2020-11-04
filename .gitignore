@@ -2,3 +2,6 @@
 Sudoku/bin/
 Sudoku/obj/
 Sudoku/Properties/
+*.dll
+packages/
+Sudoku/tessdata/

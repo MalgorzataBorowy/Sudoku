@@ -9,6 +9,10 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Diagnostics;
 using System.Threading;
+using Emgu.CV;
+using Emgu.CV.Util;
+using Emgu.CV.Structure;
+using Tesseract;
 
 namespace Sudoku
 {
@@ -209,6 +213,74 @@ namespace Sudoku
                     cells[i, j].IsLocked = false;
 
                 }
+            }
+        }
+
+        private void btnUpload_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                OpenFileDialog ofd = new OpenFileDialog();
+                if (ofd.ShowDialog() == DialogResult.OK)
+                {
+                    //Image<Bgr, byte> imgInput = new Image<Bgr, byte>(ofd.FileName);
+                    int height = 450;
+                    int width = 450;
+
+                    Image<Bgr, byte> image = new Image<Bgr, byte>(ofd.FileName);
+                    image = image.Resize(width, height, Emgu.CV.CvEnum.Inter.Linear);
+
+                    Image<Gray, byte> grayImage = image.Convert<Gray, byte>();
+                    Image<Gray, byte> buffer = grayImage.Copy();
+                    CvInvoke.GaussianBlur(grayImage, buffer, new System.Drawing.Size(5, 5), 1);
+                    grayImage = buffer;
+                    CvInvoke.AdaptiveThreshold(grayImage, buffer, 255, Emgu.CV.CvEnum.AdaptiveThresholdType.GaussianC, Emgu.CV.CvEnum.ThresholdType.Binary, 5, 2);
+                    grayImage = buffer;
+
+                    // Split image into 81 parts
+                    Image<Gray, byte>[] fields = new Image<Gray, byte>[81];
+                    CvInvoke.Imshow("Contour", grayImage);
+                    CvInvoke.WaitKey(0);
+
+                    for (int i = 0; i < 9; i++)
+                    {
+                        for (int j = 0; j < 9; j++)
+                        {
+                            int border = 5;
+                            System.Drawing.Rectangle rect = new System.Drawing.Rectangle(i * (width / 9) + border, j * (height / 9) + border, (width / 9) - 2 * border, (height / 9) - 2 * border);
+                            grayImage.ROI = rect;
+                            var index = i * 9 + j;
+                            fields[index] = grayImage.CopyBlank();
+                            grayImage.CopyTo(fields[index]);
+                            grayImage.ROI = System.Drawing.Rectangle.Empty;
+
+                        }
+                    }
+
+                    // Recognize digit
+                    string[] digits = new string[81];
+                    using (TesseractEngine engine = new TesseractEngine(@"./tessdata", "eng", EngineMode.Default))
+                    {
+                        engine.SetVariable("tessedit_char_whitelist", "0123456789");
+                        int i = 0;  //iterator
+                        foreach (var field in fields)
+                        {
+                            Page page = engine.Process(field.ToBitmap(), PageSegMode.SingleChar);
+                            string result = page.GetText();
+                            page.Dispose();
+                            Console.Write(result);
+                            digits[i++] = result;
+                            CvInvoke.Imshow("Character", field);
+                            CvInvoke.WaitKey(0);
+                        }
+                    }
+                    Console.ReadLine();
+
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.ToString());
             }
         }
 

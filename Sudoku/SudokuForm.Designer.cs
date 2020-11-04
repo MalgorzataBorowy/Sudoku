@@ -38,13 +38,14 @@
             this.timer1 = new System.Windows.Forms.Timer(this.components);
             this.label1 = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
-            this.button1 = new System.Windows.Forms.Button();
-            this.button2 = new System.Windows.Forms.Button();
+            this.btn_Blank = new System.Windows.Forms.Button();
+            this.btn_Solve2 = new System.Windows.Forms.Button();
             this.gbGame = new System.Windows.Forms.GroupBox();
             this.gbSolver = new System.Windows.Forms.GroupBox();
             this.rbGame = new System.Windows.Forms.RadioButton();
             this.rbSolver = new System.Windows.Forms.RadioButton();
             this.groupBox3 = new System.Windows.Forms.GroupBox();
+            this.btn_Upload = new System.Windows.Forms.Button();
             this.gbGame.SuspendLayout();
             this.gbSolver.SuspendLayout();
             this.groupBox3.SuspendLayout();
@@ -121,25 +122,25 @@
             this.label2.TabIndex = 6;
             this.label2.Text = "Your time:";
             // 
-            // button1
+            // btn_Blank
             // 
-            this.button1.Location = new System.Drawing.Point(6, 21);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(70, 37);
-            this.button1.TabIndex = 7;
-            this.button1.Text = "Blank";
-            this.button1.UseVisualStyleBackColor = true;
-            this.button1.Click += new System.EventHandler(this.btnBlank_Click);
+            this.btn_Blank.Location = new System.Drawing.Point(6, 21);
+            this.btn_Blank.Name = "btn_Blank";
+            this.btn_Blank.Size = new System.Drawing.Size(142, 37);
+            this.btn_Blank.TabIndex = 7;
+            this.btn_Blank.Text = "Blank";
+            this.btn_Blank.UseVisualStyleBackColor = true;
+            this.btn_Blank.Click += new System.EventHandler(this.btnBlank_Click);
             // 
-            // button2
+            // btn_Solve2
             // 
-            this.button2.Location = new System.Drawing.Point(78, 21);
-            this.button2.Name = "button2";
-            this.button2.Size = new System.Drawing.Size(70, 37);
-            this.button2.TabIndex = 8;
-            this.button2.Text = "Solve";
-            this.button2.UseVisualStyleBackColor = true;
-            this.button2.Click += new System.EventHandler(this.btnSolveCustom_Click);
+            this.btn_Solve2.Location = new System.Drawing.Point(6, 107);
+            this.btn_Solve2.Name = "btn_Solve2";
+            this.btn_Solve2.Size = new System.Drawing.Size(141, 37);
+            this.btn_Solve2.TabIndex = 8;
+            this.btn_Solve2.Text = "Solve";
+            this.btn_Solve2.UseVisualStyleBackColor = true;
+            this.btn_Solve2.Click += new System.EventHandler(this.btnSolveCustom_Click);
             // 
             // gbGame
             // 
@@ -158,11 +159,12 @@
             // 
             // gbSolver
             // 
-            this.gbSolver.Controls.Add(this.button1);
-            this.gbSolver.Controls.Add(this.button2);
+            this.gbSolver.Controls.Add(this.btn_Upload);
+            this.gbSolver.Controls.Add(this.btn_Blank);
+            this.gbSolver.Controls.Add(this.btn_Solve2);
             this.gbSolver.Location = new System.Drawing.Point(498, 71);
             this.gbSolver.Name = "gbSolver";
-            this.gbSolver.Size = new System.Drawing.Size(153, 69);
+            this.gbSolver.Size = new System.Drawing.Size(153, 157);
             this.gbSolver.TabIndex = 10;
             this.gbSolver.TabStop = false;
             this.gbSolver.Text = "Solver";
@@ -202,6 +204,16 @@
             this.groupBox3.TabStop = false;
             this.groupBox3.Text = "Select mode";
             // 
+            // btn_Upload
+            // 
+            this.btn_Upload.Location = new System.Drawing.Point(6, 64);
+            this.btn_Upload.Name = "btn_Upload";
+            this.btn_Upload.Size = new System.Drawing.Size(141, 37);
+            this.btn_Upload.TabIndex = 9;
+            this.btn_Upload.Text = "Upload";
+            this.btn_Upload.UseVisualStyleBackColor = true;
+            this.btn_Upload.Click += new System.EventHandler(this.btnUpload_Click);
+            // 
             // SudokuForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
@@ -233,13 +245,14 @@
         private System.Windows.Forms.Timer timer1;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Label label2;
-        private System.Windows.Forms.Button button1;
-        private System.Windows.Forms.Button button2;
+        private System.Windows.Forms.Button btn_Blank;
+        private System.Windows.Forms.Button btn_Solve2;
         private System.Windows.Forms.GroupBox gbGame;
         private System.Windows.Forms.GroupBox gbSolver;
         private System.Windows.Forms.RadioButton rbGame;
         private System.Windows.Forms.RadioButton rbSolver;
         private System.Windows.Forms.GroupBox groupBox3;
+        private System.Windows.Forms.Button btn_Upload;
     }
 }
 
