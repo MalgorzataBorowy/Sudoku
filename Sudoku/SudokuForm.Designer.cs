@@ -42,10 +42,10 @@
             this.btn_Solve2 = new System.Windows.Forms.Button();
             this.gbGame = new System.Windows.Forms.GroupBox();
             this.gbSolver = new System.Windows.Forms.GroupBox();
+            this.btn_Upload = new System.Windows.Forms.Button();
             this.rbGame = new System.Windows.Forms.RadioButton();
             this.rbSolver = new System.Windows.Forms.RadioButton();
             this.groupBox3 = new System.Windows.Forms.GroupBox();
-            this.btn_Upload = new System.Windows.Forms.Button();
             this.gbGame.SuspendLayout();
             this.gbSolver.SuspendLayout();
             this.groupBox3.SuspendLayout();
@@ -169,6 +169,16 @@
             this.gbSolver.TabStop = false;
             this.gbSolver.Text = "Solver";
             // 
+            // btn_Upload
+            // 
+            this.btn_Upload.Location = new System.Drawing.Point(6, 64);
+            this.btn_Upload.Name = "btn_Upload";
+            this.btn_Upload.Size = new System.Drawing.Size(141, 37);
+            this.btn_Upload.TabIndex = 9;
+            this.btn_Upload.Text = "Upload";
+            this.btn_Upload.UseVisualStyleBackColor = true;
+            this.btn_Upload.Click += new System.EventHandler(this.btnUpload_Click);
+            // 
             // rbGame
             // 
             this.rbGame.AutoSize = true;
@@ -204,26 +214,20 @@
             this.groupBox3.TabStop = false;
             this.groupBox3.Text = "Select mode";
             // 
-            // btn_Upload
-            // 
-            this.btn_Upload.Location = new System.Drawing.Point(6, 64);
-            this.btn_Upload.Name = "btn_Upload";
-            this.btn_Upload.Size = new System.Drawing.Size(141, 37);
-            this.btn_Upload.TabIndex = 9;
-            this.btn_Upload.Text = "Upload";
-            this.btn_Upload.UseVisualStyleBackColor = true;
-            this.btn_Upload.Click += new System.EventHandler(this.btnUpload_Click);
-            // 
             // SudokuForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.AutoScroll = true;
             this.ClientSize = new System.Drawing.Size(658, 473);
             this.Controls.Add(this.groupBox3);
             this.Controls.Add(this.gbSolver);
             this.Controls.Add(this.gbGame);
             this.Controls.Add(this.panel1);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
+            this.MaximizeBox = false;
+            this.MaximumSize = new System.Drawing.Size(676, 520);
+            this.MinimumSize = new System.Drawing.Size(50, 150);
             this.Name = "SudokuForm";
             this.Text = "Sudoku";
             this.gbGame.ResumeLayout(false);
