@@ -211,21 +211,22 @@ namespace Sudoku
                     cells[i,j].Value = 0;
                     cells[i,j].Clear();
                     cells[i, j].IsLocked = false;
-
                 }
             }
         }
 
         private void btnUpload_Click(object sender, EventArgs e)
         {
+            stopwatch.Reset();
             try
             {
                 OpenFileDialog ofd = new OpenFileDialog();
                 if (ofd.ShowDialog() == DialogResult.OK)
                 {
-                    //Image<Bgr, byte> imgInput = new Image<Bgr, byte>(ofd.FileName);
                     int height = 450;
                     int width = 450;
+                    string[] digits = new string[81];
+
 
                     Image<Bgr, byte> image = new Image<Bgr, byte>(ofd.FileName);
                     image = image.Resize(width, height, Emgu.CV.CvEnum.Inter.Linear);
@@ -239,8 +240,6 @@ namespace Sudoku
 
                     // Split image into 81 parts
                     Image<Gray, byte>[] fields = new Image<Gray, byte>[81];
-                    CvInvoke.Imshow("Contour", grayImage);
-                    CvInvoke.WaitKey(0);
 
                     for (int i = 0; i < 9; i++)
                     {
@@ -253,12 +252,10 @@ namespace Sudoku
                             fields[index] = grayImage.CopyBlank();
                             grayImage.CopyTo(fields[index]);
                             grayImage.ROI = System.Drawing.Rectangle.Empty;
-
                         }
                     }
 
-                    // Recognize digit
-                    string[] digits = new string[81];
+                    // Recognize digits
                     using (TesseractEngine engine = new TesseractEngine(@"./tessdata", "eng", EngineMode.Default))
                     {
                         engine.SetVariable("tessedit_char_whitelist", "0123456789");
@@ -268,14 +265,38 @@ namespace Sudoku
                             Page page = engine.Process(field.ToBitmap(), PageSegMode.SingleChar);
                             string result = page.GetText();
                             page.Dispose();
-                            Console.Write(result);
-                            digits[i++] = result;
-                            CvInvoke.Imshow("Character", field);
-                            CvInvoke.WaitKey(0);
+                            digits[i++] = result.Trim();
+                            field.Dispose();
                         }
                     }
-                    Console.ReadLine();
+                    image.Dispose(); grayImage.Dispose(); buffer.Dispose();
 
+                    // Set the cells and puzzle with detected digits
+                    puzzle.Reset();     // Reset the puzzle content
+                    int k = 0;  //iterator
+                    for (int i = 0; i < 9; i++) // Update puzzle with user values
+                    {
+                        for (int j = 0; j < 9; j++)
+                        {
+                            cells[i, j].Value = 0;      //Clear fields
+                            cells[i, j].Clear();
+                            cells[i, j].IsLocked = false;
+
+                            if (Int32.TryParse(digits[9 * i + j], out int value))
+                            {
+                                cells[i, j].Value = value;
+                                cells[i, j].Text = cells[i, j].Value.ToString();
+                                puzzle.MakeGuess(i, j, cells[i, j].Value);  // Set sudoku puzzle fields
+                                cells[i, j].IsLocked = true;
+                                cells[i, j].ForeColor = ((i / 3) + (j / 3)) % 2 == 0 ? Color.Black : Color.White; // Set the color in locked fields depending of square
+                            }
+                            else
+                            {
+                                cells[i, j].Value = 0;
+                                cells[i, j].ForeColor = SystemColors.ControlDarkDark;   //Change the color in unlocked fields
+                            }                                
+                        }
+                    }
                 }
             }
             catch (Exception ex)
