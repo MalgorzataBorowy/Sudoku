@@ -13,6 +13,7 @@ namespace Sudoku
         public void Clear()
         {
             this.Text = string.Empty;
+            this.Value = 0;
             this.IsLocked = false;
         }
     }

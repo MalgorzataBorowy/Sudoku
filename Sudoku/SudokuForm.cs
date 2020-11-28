@@ -62,15 +62,26 @@ namespace Sudoku
             });
         }
 
+        private void UpdateUI()
+        {
+            // Update the user interface
+            ExecuteForEvery((i, j) =>
+            {
+                cells[i, j].Value = puzzle.sudokuPuzzle[i, j].Value;
+                cells[i, j].ForeColor = ((i / 3) + (j / 3)) % 2 == 0 ? Color.Black : Color.White; // Set the color depending of square
+                if (!cells[i, j].IsLocked)
+                    cells[i, j].ForeColor = SystemColors.ControlDarkDark;   //Change the color in unlocked fields
+                cells[i, j].Text = cells[i, j].Value.ToString();
+                if (cells[i, j].Value == 0)
+                    cells[i, j].Clear();
+            });
+        }
+
         private async Task StartNewGame() // Creates new game and starts the stopwatch
         {
             stopwatch.Reset();
             // Clear the value in every cell
-            foreach (var cell in cells)
-            {
-                cell.Value = 0;
-                cell.Clear();
-            }
+            ResetUI();
 
             // Generate new game
             puzzle = new SudokuPuzzle();
@@ -78,16 +89,10 @@ namespace Sudoku
 
             ExecuteForEvery((i, j) =>
             {
-                cells[i, j].Value = puzzle.sudokuPuzzle[i, j].Value;
-                cells[i, j].IsLocked = true;
-                cells[i, j].ForeColor = ((i / 3) + (j / 3)) % 2 == 0 ? Color.Black : Color.White;
-                cells[i, j].Text = cells[i, j].Value.ToString();
-                if (cells[i, j].Value == 0)
-                {
-                    cells[i, j].Clear();
-                    cells[i, j].IsLocked = false;
-                }
+                if(puzzle.sudokuPuzzle[i, j].Value!=0)
+                    cells[i, j].IsLocked = true;
             });
+            UpdateUI();
             stopwatch.Restart();
         }
 
@@ -104,9 +109,64 @@ namespace Sudoku
             });
         }
 
-        private void UpdateUI()
+        private void ResetUI()  // 
         {
+            ExecuteForEvery((i, j) =>
+            {
+                cells[i, j].Value = 0;
+                cells[i, j].Clear();
+            });
+        }
 
+        private string[] ProcessSudokuImg(string fileName)  // --> Wydzielic do innej klasy!
+        {
+            int height = 450;
+            int width = 450;
+            string[] digits = new string[81];
+
+            Image<Bgr, byte> image = new Image<Bgr, byte>(fileName);
+            image = image.Resize(width, height, Emgu.CV.CvEnum.Inter.Linear);
+
+            Image<Gray, byte> grayImage = image.Convert<Gray, byte>();
+            Image<Gray, byte> buffer = grayImage.Copy();
+            CvInvoke.GaussianBlur(grayImage, buffer, new System.Drawing.Size(5, 5), 1);
+            grayImage = buffer;
+            CvInvoke.AdaptiveThreshold(grayImage, buffer, 255, Emgu.CV.CvEnum.AdaptiveThresholdType.GaussianC, Emgu.CV.CvEnum.ThresholdType.Binary, 5, 2);
+            grayImage = buffer;
+
+            // Split image into 81 parts
+            Image<Gray, byte>[] fields = new Image<Gray, byte>[81];
+
+            for (int i = 0; i < 9; i++)
+            {
+                for (int j = 0; j < 9; j++)
+                {
+                    int border = 5;
+                    System.Drawing.Rectangle rect = new System.Drawing.Rectangle(i * (width / 9) + border, j * (height / 9) + border, (width / 9) - 2 * border, (height / 9) - 2 * border);
+                    grayImage.ROI = rect;
+                    var index = i * 9 + j;
+                    fields[index] = grayImage.CopyBlank();
+                    grayImage.CopyTo(fields[index]);
+                    grayImage.ROI = System.Drawing.Rectangle.Empty;
+                }
+            }
+
+            // Recognize digits
+            using (TesseractEngine engine = new TesseractEngine(@"./tessdata", "eng", EngineMode.Default))
+            {
+                engine.SetVariable("tessedit_char_whitelist", "0123456789");
+                int i = 0;  //iterator
+                foreach (var field in fields)
+                {
+                    Page page = engine.Process(field.ToBitmap(), PageSegMode.SingleChar);
+                    string result = page.GetText();
+                    page.Dispose();
+                    digits[i++] = result.Trim();
+                    field.Dispose();
+                }
+            }
+            image.Dispose(); grayImage.Dispose(); buffer.Dispose();
+            return digits;
         }
 
 
@@ -170,16 +230,7 @@ namespace Sudoku
         {
             ClearPuzzle();  // Clear puzzle from user modifications
             puzzle.SolvePuzzle();
-            ExecuteForEvery((i, j) =>
-            {
-                cells[i, j].Value = puzzle.sudokuPuzzle[i, j].Value;
-                if (!cells[i, j].IsLocked)
-                    cells[i, j].ForeColor = SystemColors.ControlDarkDark;   //Change the color in unlocked fields
-                cells[i, j].Text = cells[i, j].Value.ToString();
-                if (cells[i, j].Value == 0)
-                    cells[i, j].Clear();
-            });
-
+            UpdateUI();
             stopwatch.Reset();
         }
 
@@ -198,12 +249,7 @@ namespace Sudoku
         {
             stopwatch.Reset();
             puzzle.Reset();
-            ExecuteForEvery((i, j) =>
-            {
-                cells[i, j].Value = 0;
-                cells[i, j].Clear();
-                cells[i, j].IsLocked = false;
-            });
+            ResetUI();
         }
 
         private void btnUpload_Click(object sender, EventArgs e)
@@ -215,78 +261,23 @@ namespace Sudoku
                 if (ofd.ShowDialog() != DialogResult.OK)
                     throw new Exception("Cannot open a file");
 
-                int height = 450;
-                int width = 450;
-                string[] digits = new string[81];
-
-                Image<Bgr, byte> image = new Image<Bgr, byte>(ofd.FileName);
-                image = image.Resize(width, height, Emgu.CV.CvEnum.Inter.Linear);
-
-                Image<Gray, byte> grayImage = image.Convert<Gray, byte>();
-                Image<Gray, byte> buffer = grayImage.Copy();
-                CvInvoke.GaussianBlur(grayImage, buffer, new System.Drawing.Size(5, 5), 1);
-                grayImage = buffer;
-                CvInvoke.AdaptiveThreshold(grayImage, buffer, 255, Emgu.CV.CvEnum.AdaptiveThresholdType.GaussianC, Emgu.CV.CvEnum.ThresholdType.Binary, 5, 2);
-                grayImage = buffer;
-
-                // Split image into 81 parts
-                Image<Gray, byte>[] fields = new Image<Gray, byte>[81];
-
-                for (int i = 0; i < 9; i++)
-                {
-                    for (int j = 0; j < 9; j++)
-                    {
-                        int border = 5;
-                        System.Drawing.Rectangle rect = new System.Drawing.Rectangle(i * (width / 9) + border, j * (height / 9) + border, (width / 9) - 2 * border, (height / 9) - 2 * border);
-                        grayImage.ROI = rect;
-                        var index = i * 9 + j;
-                        fields[index] = grayImage.CopyBlank();
-                        grayImage.CopyTo(fields[index]);
-                        grayImage.ROI = System.Drawing.Rectangle.Empty;
-                    }
-                }
-
-                // Recognize digits
-                using (TesseractEngine engine = new TesseractEngine(@"./tessdata", "eng", EngineMode.Default))
-                {
-                    engine.SetVariable("tessedit_char_whitelist", "0123456789");
-                    int i = 0;  //iterator
-                    foreach (var field in fields)
-                    {
-                        Page page = engine.Process(field.ToBitmap(), PageSegMode.SingleChar);
-                        string result = page.GetText();
-                        page.Dispose();
-                        digits[i++] = result.Trim();
-                        field.Dispose();
-                    }
-                }
-                image.Dispose(); grayImage.Dispose(); buffer.Dispose();
+                string[] digits = ProcessSudokuImg(ofd.FileName);
 
                 // Set the cells and puzzle with detected digits
-
                 puzzle.Reset();     // Reset the puzzle content 
-                    
+                ResetUI();
+
                 // Update puzzle with values from image
                 ExecuteForEvery((i, j) =>
                 {
-                    cells[i, j].Value = 0;      //Clear all fields
-                    cells[i, j].Clear();
-                    cells[i, j].IsLocked = false;
-
                     if (Int32.TryParse(digits[9 * i + j], out int value))
                     {
-                        cells[i, j].Value = value;
-                        cells[i, j].Text = cells[i, j].Value.ToString();
-                        puzzle.MakeGuess(i, j, cells[i, j].Value);  // Set sudoku puzzle fields
+                        puzzle.MakeGuess(i, j, value);  // Set sudoku puzzle fields
                         cells[i, j].IsLocked = true;
-                        cells[i, j].ForeColor = ((i / 3) + (j / 3)) % 2 == 0 ? Color.Black : Color.White; // Set the color in locked fields depending of square
+                        cells[i, j].Text = value.ToString();
                     }
-                    else
-                    {
-                        cells[i, j].Value = 0;
-                        cells[i, j].ForeColor = SystemColors.ControlDarkDark;   //Change the color in unlocked fields
-                    }
-                });   
+                });
+                UpdateUI();
             }
             catch (Exception ex)
             {
@@ -309,24 +300,11 @@ namespace Sudoku
             if (puzzle.CheckValidity()) // Check if in any column, row or square there are no duplicate values
             {
                 puzzle.SolvePuzzle();
-
-                // Update the user interface
-                ExecuteForEvery((i, j) =>
-                {
-                    cells[i, j].Value = puzzle.sudokuPuzzle[i, j].Value;
-                    cells[i, j].ForeColor = ((i / 3) + (j / 3)) % 2 == 0 ? Color.Black : Color.White; // Set the color depending of square
-                    if (!cells[i, j].IsLocked)
-                        cells[i, j].ForeColor = SystemColors.ControlDarkDark;   //Change the color in unlocked fields
-                    cells[i, j].Text = cells[i, j].Value.ToString();
-                    if (cells[i, j].Value == 0)
-                        cells[i, j].Clear();
-                });
-
+                UpdateUI();
                 stopwatch.Reset();
             }
             else
             {
-                // Update puzzle with user values
                 ExecuteForEvery((i, j) =>
                 {
                     cells[i, j].IsLocked = false;    //Change field status to allow further field modification
